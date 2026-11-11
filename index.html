@@ -549,7 +549,7 @@ div.ctx{padding:0 4px;margin:0}
 
 /* No typed answers or credentials enter analytics metadata. */
 (function(root){
- const build='2026-11-11-analytics-1';
+ const build='2026-11-11-analytics-2';
  const uid=()=>root.crypto&&root.crypto.randomUUID?root.crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)+'-'+Math.random().toString(36).slice(2);
  function clean(s,n=180){return String(s||'').replace(/<[^>]*>/g,'').slice(0,n);}
  function hash(text){let h=2166136261;for(let i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619);return(h>>>0).toString(36);}
@@ -557,11 +557,13 @@ div.ctx{padding:0 4px;margin:0}
   if(!session||!session.u||session.u.course!=='zero')return {};
   session.analyticsId=session.analyticsId||uid();
   const step=session.steps[session.i]||{},u=session.u,l=session.l||{};
-  const q=step.t==='q'&&(u.Q||{})[String(step.id).split(':').pop()];
+  const sourceId=String(step.wid||step.gk||step.id||'').split(':')[0];
+  const questionUnit=(root.UNITS||[]).find(x=>x.id===sourceId)||u;
+  const q=step.t==='q'&&(questionUnit.Q||{})[String(step.id).split(':').pop()];
   const skill=step.wid||(q&&q.wid)||(step.gk?step.gk.split(':').slice(0,2).join(':'):String(step.id||u.id+':'+l.id));
   const mode=step.trainingRetry?'repair':session.review?'spaced':step.title==='Вспомни из прошлых уроков'?'cumulative':session.analyticsRepeat?'lesson_repeat':'lesson';
   const item=step.gk||step.id||u.id+':'+(step.wid||l.id)+':'+step.t+':'+hash(String(step.s||step.ru||step.title||''));
-  return {aid:session.analyticsId,v:build,ik:clean(item,145),meta:{mode,skill:clean(skill,120),type:step.t||'',prompt:clean(step.s||(q&&q.s)||step.ru||step.title),unit_title:clean(u.title,100),lesson_title:clean(l.name,100)}};
+  return {aid:session.analyticsId,v:build,ik:clean(item,145),meta:{mode,skill:clean(skill,120),type:step.t||'',prompt:clean(step.s||(q&&q.s)||step.ru||step.title),unit_title:clean(questionUnit.title,100),lesson_title:clean(l.name,100)}};
  }
  function install(getSession,emit){
   const pending=new WeakMap();document.addEventListener('click',function(ev){const fn=pending.get(ev);if(fn){pending.delete(ev);fn();}});
@@ -632,7 +634,7 @@ function _0x2f7e(_0x3b9ef6,_0x232888){var _0x4bf3e9=_0x4bf3();return _0x2f7e=fun
     } catch(ignore) {}
   }function _0x37abbf() {
     if (!_0x56ee62.srv || _0x4a1aee || Date.now()<analyticsRetryAt) return;
-    var batch=_0xaeb17.filter(function(e){return !e._owner||String(e._owner).toLowerCase()===String(_0x56ee62.nick).toLowerCase();}).slice(0,60);
+    var batch=_0xaeb17.filter(function(e){return !e._owner||String(e._owner).toLowerCase()===String(_0x56ee62.nick).toLowerCase();}).slice(0,30);
     if (!batch.length)return;
     _0x4a1aee=true;
     _0x301425('mur_track',{p_nick:_0x56ee62.nick,p_pin:_0x56ee62.pin,p_events:batch}).then(function(result){

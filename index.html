@@ -309,6 +309,8 @@ button,a,input,select,label,[role="button"],.tap{touch-action:manipulation}
 
 .recall-skip{width:100%;min-height:44px;flex-shrink:0;line-height:1.3}.recall-skip[hidden]{display:none}
 
+.recall-hint-area{display:flex;flex-direction:column;gap:6px;flex-shrink:0}.recall-hint-area[hidden],.recall-hint-text[hidden]{display:none}.recall-hint{align-self:flex-start;min-height:44px;text-align:left;line-height:1.3;padding:8px 10px}.recall-hint:disabled{opacity:.75;cursor:default}.recall-hint-text{margin:0;font-size:17px;line-height:1.5;letter-spacing:.5px;overflow-wrap:anywhere;color:var(--ink)}
+
 </style>
 
 <div id="app"></div>
@@ -721,7 +723,7 @@ function _0x2f7e(_0x3b9ef6,_0x232888){var _0x4bf3e9=_0x4bf3();return _0x2f7e=fun
     session.russiaRecorded=session.russiaRecorded||{};
     if(session.russiaRecorded[session.i]) return;
     session.russiaRecorded[session.i]=true;
-    if(russiaReview.record(_0x56ee62,id,correct,_0x1e910b(0),Date.now(),!!step.comm)) _0x4ed73c();
+    if(russiaReview.record(_0x56ee62,id,correct && !(session.recallHints && session.recallHints[session.i]),_0x1e910b(0),Date.now(),!!step.comm)) _0x4ed73c();
   }
 
   function openDailyGoal(goal) {
@@ -766,6 +768,32 @@ function _0x2f7e(_0x3b9ef6,_0x232888){var _0x4bf3e9=_0x4bf3();return _0x2f7e=fun
         }
       };
     });
+  }
+
+  function recallInitials(answer) {
+    var text=String(answer || '');
+    if ((text.match(/[A-Za-z0-9]/g)||[]).length <= 1) return 'Один символ';
+    return text.replace(/[A-Za-z0-9]+(?:['’][A-Za-z0-9]+)*/g,function(word){
+      return word.charAt(0)+word.slice(1).replace(/[A-Za-z0-9]/g,'·');
+    });
+  }
+  function attachRecallHint(session,index,answer,input) {
+    var area=_0x2995ef('#recall-hint-area'),button=_0x2995ef('#recall-hint'),text=_0x2995ef('#recall-hint-text');
+    var hint={used:false,closed:false};
+    button.onclick=function(){
+      if(hint.used || hint.closed || _0x261281!==session || session.i!==index || input.disabled || !input.isConnected) return;
+      hint.used=true;
+      session.recallHints=session.recallHints||{};
+      session.recallHints[index]=true;
+      var clue=recallInitials(answer);
+      text.textContent=clue==='Один символ'?'Ответ состоит из одного символа.':'Первые буквы: '+clue;
+      text.hidden=false;
+      button.disabled=true;
+      button.setAttribute('aria-expanded','true');
+      button.textContent='Подсказка открыта';
+    };
+    hint.close=function(){hint.closed=true;button.disabled=true;area.hidden=true;};
+    return hint;
   }
 Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](function(_0x2e196e){var _0x3b544d=_0x2ee1d9;_0x1e6198(_0x2e196e,_0x5a846a[_0x3b544d(0x2ed6)][_0x2e196e]);}),Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0xdfd)]||{})[_0x2ee1d9(0x236b)](function(_0x5df238){var _0x26cc7c=_0x2ee1d9;_0x1c3074(+_0x5df238,_0x5a846a[_0x26cc7c(0xdfd)][_0x5df238]);});function _0x1d99db(_0x5374e0){var _0x58d69e=_0x2ee1d9;if(!_0x5374e0||!_0x5374e0[_0x58d69e(0x3c55)])return;SET26=_0x5374e0,SET26[_0x58d69e(0x2a10)]=!![],_0x5374e0[_0x58d69e(0x236b)](function(_0xda417d){var _0x30dc11=_0x58d69e;(_0xda417d[_0x30dc11(0xc80)]||[])[_0x30dc11(0x236b)](function(_0x2ecf9b,_0x12cb0d){var _0x5cc20a=_0x30dc11;_0x4ae520[_0x5cc20a(0x2576)+_0xda417d['id']+':'+_0x12cb0d]=_0x2ecf9b;});});}if(_0x5a846a[_0x2ee1d9(0x168c)])_0x1d99db(_0x5a846a[_0x2ee1d9(0x168c)]);function _0x25d37b(_0x4c1e54){var _0x6ea01f=_0x2ee1d9;if(!_0x4c1e54||!_0x4c1e54[_0x6ea01f(0x3c55)])return;VERB=_0x4c1e54,VERB[_0x6ea01f(0x2a10)]=!![];}if(_0x5a846a[_0x2ee1d9(0x1f73)])_0x25d37b(_0x5a846a[_0x2ee1d9(0x1f73)]);function _0x5a8a25(){var _0xd6f792=_0x2ee1d9;if(VERB[_0xd6f792(0x2a10)])return Promise[_0xd6f792(0x1700)]();if(!_0x56ee62[_0xd6f792(0xb8b)])return Promise[_0xd6f792(0x8e4)](new Error(_0xd6f792(0x3d59)));return _0x3633f9()[_0xd6f792(0x3656)](function(){var _0x2bd167=_0xd6f792;return _0x301425(_0x2bd167(0x1596),{'p_nick':_0x56ee62[_0x2bd167(0x2fed)],'p_pin':_0x56ee62[_0x2bd167(0xb30)],'p_set':_0x2bd167(0x1f73)});})[_0xd6f792(0x3656)](function(_0x20d317){var _0x197fa8=_0xd6f792;if(!_0x20d317||!_0x20d317['ok']||!_0x20d317[_0x197fa8(0x3758)]||!_0x20d317[_0x197fa8(0x3758)][_0x197fa8(0x3c55)])throw new Error(_0x20d317&&_0x20d317[_0x197fa8(0x7bc)]||_0x197fa8(0x7bc));_0x5a846a[_0x197fa8(0x1f73)]=_0x20d317[_0x197fa8(0x3758)],_0x25d37b(_0x20d317[_0x197fa8(0x3758)]),_0x470c79();});}var _0x38745b=_0x2ee1d9(0x28d9)+_0x2ee1d9(0x1e01)+_0x2ee1d9(0x573)+_0x2ee1d9(0x1a2d)+_0x2ee1d9(0x2a18);function _0x2bf893(){var _0x46f5cf=_0x2ee1d9;for(var _0x573adf=0x0;_0x573adf<UNITS[_0x46f5cf(0x3c55)];_0x573adf++)if(UNITS[_0x573adf]['id']===_0x46f5cf(0x288a))return _0x573adf;return-0x1;}function _0x32cea0(){var _0x5f3417=_0x2bf893();return _0x5f3417<0x0||_0x4c1eb4(UNITS[_0x5f3417]);}function _0xdd34d4(){var _0x5341ec=_0x2ee1d9;if(SET26[_0x5341ec(0x2a10)])return Promise[_0x5341ec(0x1700)]();if(!_0x56ee62[_0x5341ec(0xb8b)])return Promise[_0x5341ec(0x8e4)](new Error(_0x5341ec(0x3d59)));return _0x3633f9()[_0x5341ec(0x3656)](function(){var _0x3b9e21=_0x5341ec;return _0x301425(_0x3b9e21(0x1596),{'p_nick':_0x56ee62[_0x3b9e21(0x2fed)],'p_pin':_0x56ee62[_0x3b9e21(0xb30)],'p_set':_0x3b9e21(0x2652)});})[_0x5341ec(0x3656)](function(_0x29f46a){var _0x5a72e3=_0x5341ec;if(!_0x29f46a||!_0x29f46a['ok']||!_0x29f46a[_0x5a72e3(0x3758)])throw new Error(_0x29f46a&&_0x29f46a[_0x5a72e3(0x7bc)]||_0x5a72e3(0x7bc));_0x5a846a[_0x5a72e3(0x168c)]=_0x29f46a[_0x5a72e3(0x3758)],_0x1d99db(_0x29f46a[_0x5a72e3(0x3758)]),_0x470c79();});}function _0x470c79(){var _0xdb977c=_0x2ee1d9;try{localStorage[_0xdb977c(0x149f)](_0x3f6c2e,JSON[_0xdb977c(0xac)+'y'](_0x5a846a));}catch(_0x45dd65){}}function _0x2d7fdc(){var _0x3f10d4=_0x2ee1d9,_0x173c3d=[];for(var _0x4275f8=0x0;_0x4275f8<UNITS[_0x3f10d4(0x3c55)];_0x4275f8++)if(_0x4275f8===0x0||_0x4c1eb4(_0x527ac4(_0x4275f8)))_0x173c3d[_0x3f10d4(0x31e7)](_0x4275f8);return _0x173c3d;}function _0x2c5854(_0x1cd707,_0x1d24fd){var _0x3c744d=_0x2ee1d9;if(!_0x56ee62[_0x3c744d(0xb8b)])return Promise[_0x3c744d(0x8e4)](new Error(_0x3c744d(0x3d59)));return _0x3633f9()[_0x3c744d(0x3656)](function(){var _0x2eb3b5=_0x3c744d;return _0x301425(_0x2eb3b5(0x233b)+_0x2eb3b5(0x2c44),{'p_nick':_0x56ee62[_0x2eb3b5(0x2fed)],'p_pin':_0x56ee62[_0x2eb3b5(0xb30)],'p_units':_0x1cd707,'p_exams':!!_0x1d24fd});})[_0x3c744d(0x3656)](function(_0xb22bc6){var _0x568413=_0x3c744d;if(!_0xb22bc6||!_0xb22bc6['ok'])throw new Error(_0xb22bc6&&_0xb22bc6[_0x568413(0x7bc)]||_0x568413(0x7bc));return(_0xb22bc6[_0x568413(0x2ed6)]||[])[_0x568413(0x236b)](function(_0x142f08){var _0x558b4f=_0x568413,_0x1f268a=UNITS[_0x142f08[_0x558b4f(0x3d23)]]&&UNITS[_0x142f08[_0x558b4f(0x3d23)]]['id'];if(!_0x1f268a)return;_0x5a846a[_0x558b4f(0x2ed6)][_0x1f268a]=_0x142f08[_0x558b4f(0x26da)],_0x1e6198(_0x1f268a,_0x142f08[_0x558b4f(0x26da)]);}),(_0xb22bc6[_0x568413(0xdfd)]||[])[_0x568413(0x236b)](function(_0x33b5c6){var _0x424f0b=_0x568413;_0x5a846a[_0x424f0b(0xdfd)][_0x33b5c6[_0x424f0b(0x3d23)]]=_0x33b5c6[_0x424f0b(0x26da)],_0x1c3074(_0x33b5c6[_0x424f0b(0x3d23)],_0x33b5c6[_0x424f0b(0x26da)]);}),_0x470c79(),_0xb22bc6;});}var _0x1971e2=![];function _0xe2a3cc(){var _0xd48e96=_0x2ee1d9;if(!_0x56ee62[_0xd48e96(0xb8b)]||_0x1971e2)return;var _0x202fd9=_0x2d7fdc()[_0xd48e96(0xcee)](function(_0x20f91a){var _0x35249c=_0xd48e96;return!UNITS[_0x20f91a][_0x35249c(0x2a10)];});if(!_0x202fd9[_0xd48e96(0x3c55)])return;_0x1971e2=!![],_0x2c5854(_0x202fd9,![])[_0xd48e96(0x3656)](function(){_0x1971e2=![];},function(){_0x1971e2=![];});}function _0x389c06(){var _0x10100d=_0x2ee1d9;_0x45fd78(''),_0x2b7f59[_0x10100d(0x2030)+'L']=_0x10100d(0x10a0)+_0x10100d(0x3150)+_0x10100d(0xaed)+_0x10100d(0x2870)+_0x10100d(0x32ca)+_0x10100d(0x12f7)+_0x10100d(0x2af7)+_0x10100d(0x3496)+_0x10100d(0x1eb4)+'=\x22'+_0x553ab5(_0x10100d(0x172b))+(_0x10100d(0x23d0)+_0x10100d(0x22e9)+_0x10100d(0x2bee)+_0x10100d(0x1193)+_0x10100d(0x2f64)+_0x10100d(0x3e1b)+_0x10100d(0x3e8c)+_0x10100d(0x4021)+_0x10100d(0x2f71)+_0x10100d(0x38f1)+_0x10100d(0x11ed)+_0x10100d(0x23fd)+_0x10100d(0x22e9)+_0x10100d(0x516)+_0x10100d(0x21af)+_0x10100d(0x1bcc)+_0x10100d(0x2784)+_0x10100d(0x2cbc)+_0x10100d(0xe55)+_0x10100d(0x24f2));}function _0x58585d(_0x89fb99){var _0x11f09f=_0x2ee1d9;_0x487d6b(_0x11f09f(0x28cc)),_0x166fea(_0x89fb99&&_0x89fb99[_0x11f09f(0x1878)]===_0x11f09f(0x2612)?_0x11f09f(0xc0)+_0x11f09f(0xd51)+_0x11f09f(0x3ab7)+_0x11f09f(0x314f)+_0x11f09f(0x138c)+_0x11f09f(0x3d6)+_0x11f09f(0x3ade)+_0x11f09f(0x3b0d)+'е':_0x89fb99&&_0x89fb99[_0x11f09f(0x1878)]===_0x11f09f(0x3d59)?_0x11f09f(0x1a20)+_0x11f09f(0x37fc)+_0x11f09f(0x389a)+_0x11f09f(0x3b31)+_0x11f09f(0x3b54):_0x11f09f(0x3d12)+_0x11f09f(0x346f)+_0x11f09f(0x1b50)+_0x11f09f(0x3e8f)+_0x11f09f(0x3e69)+_0x11f09f(0x259a)+_0x11f09f(0x2c4f));}document[_0x2ee1d9(0x1298)+_0x2ee1d9(0x3ef1)](_0x2ee1d9(0x8e8)+_0x2ee1d9(0xeb8),function(){var _0x10a009=_0x2ee1d9;document[_0x10a009(0x8e8)+_0x10a009(0x2f44)]===_0x10a009(0x6d5)&&_0x56ee62[_0x10a009(0xb8b)]&&(_0x3633f9(),_0x37abbf());});var _0x181f77=![];(function(){var _0x831b90=_0x2ee1d9;try{var _0x369ce0=location[_0x831b90(0x1967)]||'';if(/teach=murr/[_0x831b90(0x1110)](_0x369ce0))localStorage[_0x831b90(0x149f)](_0x831b90(0x235)+'_t','1');if(/teach=off/[_0x831b90(0x1110)](_0x369ce0))localStorage[_0x831b90(0x3165)+'em'](_0x831b90(0x235)+'_t');_0x181f77=localStorage[_0x831b90(0xb1a)](_0x831b90(0x235)+'_t')==='1';}catch(_0xadb0c6){}}()),_0x56ee62[_0x2ee1d9(0x34ad)+'l']=_0x181f77;var _0x313c95=_0x2ee1d9(0xde6)+'14',_0x495f96={};function _0x24c316(){var _0x49b5f3=_0x2ee1d9,_0x2e5ec5=new Date(Date[_0x49b5f3(0x1523)]()+0x3*0x36ee80);return _0x2e5ec5[_0x49b5f3(0xe02)+_0x49b5f3(0x24ac)]()[_0x49b5f3(0x1870)](0x0,0xa);}function _0xb37730(_0x1fb69c){var _0x3ff903=_0x2ee1d9;if(_0x495f96[_0x1fb69c])return _0x495f96[_0x1fb69c];var _0x4117d3=new Date(_0x313c95+(_0x3ff903(0x39ba)+'0Z'));return _0x4117d3[_0x3ff903(0x3c25)+'te'](_0x4117d3[_0x3ff903(0x3d52)+'te']()+0x7*(_0x1fb69c-0x1)),_0x4117d3[_0x3ff903(0xe02)+_0x3ff903(0x24ac)]()[_0x3ff903(0x1870)](0x0,0xa);}function _0x1f02a7(_0xcf7e2e){var _0x658dbd=_0x2ee1d9;return!_0xcf7e2e||_0xcf7e2e[_0x658dbd(0x3703)]!==_0x658dbd(0x816)||!_0xcf7e2e[_0x658dbd(0x3f56)]||_0x56ee62[_0x658dbd(0x34ad)+'l']||_0xb37730(_0xcf7e2e[_0x658dbd(0x3f56)])<=_0x24c316();}function _0x1e910b(_0x18833d){var _0x4505a6=_0x2ee1d9,_0x80d949=new Date();return _0x80d949[_0x4505a6(0x2671)](_0x80d949[_0x4505a6(0x23d3)]()+(_0x18833d||0x0)),_0x80d949[_0x4505a6(0x110e)+_0x4505a6(0x39ac)]()+'-'+String(_0x80d949[_0x4505a6(0x1af3)]()+0x1)[_0x4505a6(0x1dc3)](0x2,'0')+'-'+String(_0x80d949[_0x4505a6(0x23d3)]())[_0x4505a6(0x1dc3)](0x2,'0');}function _0x5cb7e3(_0x22105f,_0x1d1987){var _0x13218c=_0x2ee1d9;return Math[_0x13218c(0x1c4e)]((new Date(_0x1d1987)-new Date(_0x22105f))/0x5265c00);}function _0xd06bdd(){var _0x4d019f=_0x2ee1d9,_0x58ef1f=_0x1e910b(0x0),_0x3992cc=0x0;for(var _0x14d458 in _0x56ee62[_0x4d019f(0x638)])if(_0x56ee62[_0x4d019f(0x638)][_0x14d458][_0x4d019f(0x1581)]<=_0x58ef1f&&_0x3f8585(_0x14d458))_0x3992cc++;return _0x3992cc;}UNITS[_0x2ee1d9(0x236b)](function(_0x3646c1){var _0x374c5d=_0x2ee1d9,_0x3cf9db={};_0x3646c1[_0x374c5d(0x2d29)][_0x374c5d(0x236b)](function(_0xc4b970){var _0x321003=_0x374c5d;(_0xc4b970[_0x321003(0x6f1)]||[])[_0x321003(0x236b)](function(_0x45298b){if(_0x45298b['t']==='q')_0x3cf9db[_0x45298b['id']]=!![];});}),Object[_0x374c5d(0x3ecb)](_0x3646c1['Q'])[_0x374c5d(0x236b)](function(_0x2259ff){if(!_0x3cf9db[_0x2259ff])delete _0x3646c1['Q'][_0x2259ff];});});var _0x2d202c=[];function _0x1a77a8(_0x46e7fb){var _0x17dda9=_0x2ee1d9;for(var _0x3166b3=0x0;_0x3166b3<UNITS[_0x17dda9(0x3c55)];_0x3166b3++)if(UNITS[_0x3166b3]['id']===_0x46e7fb)return UNITS[_0x3166b3];}var _0x3aa241={};function _0x3f8585(_0xb5223){var _0x3401ea=_0x2ee1d9;if(_0x3aa241[_0xb5223])return _0x3aa241[_0xb5223];if(_0x182c77[_0xb5223])return _0x182c77[_0xb5223];if(_0x4ae520[_0xb5223])return _0x4ae520[_0xb5223];var _0x3a0d66=_0xb5223[_0x3401ea(0x1586)](':'),_0x60d057=_0x1a77a8(_0x3a0d66[0x0]);return _0x60d057&&_0x60d057['Q'][_0x3a0d66[0x1]];}function _0x33d388(_0x630117) {
     var _0x2e48f7 = _0x1cfa3f(_0x630117) && !_0x630117["blitz"] ? [] : [{
@@ -1401,11 +1429,8 @@ Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](f
     return _0x42a728(String(_0x50ed80)["toLowerCase"]()["replace"](/[’`]/g, "'")["trim"]()["replace"](/[.!?]+$/, "")["replace"](/\s+/g, " ")["trim"]());
   }function _0x4de35e(_0x258627) {
     var typeSession=_0x261281, typeIndex=typeSession.i;
-    var _0x47c082 = false,
-      _0x1bb5c5 = _0x258627["h"] ? String(_0x258627["a"][0])["split"](" ")["map"](function (_0x3ea974) {
-        return _0x3ea974["charAt"](0) + _0x3ea974["slice"](1)["replace"](/[A-Za-z]/g, "·");
-      })["join"](" ") : "";
-    _0x2b7f59["innerHTML"] = "<div class=\"scr\" style=\"gap:14px\">" + _0x297612() + "<div style=\"display:flex;flex-direction:column;gap:4px\"><div class=\"eyebrow\">Задание " + (_0x261281["i"] + 1) + " из " + _0x261281["steps"]["length"] + "</div><h1 class=\"disp\" style=\"font-size:28px\">" + (_0x258627["title"] ? _0x258627["title"] : _0x258627["s"] ? "Впиши фразу" : "Напиши по-английски") + "</h1></div>" + (_0x258627["s"] ? "<div class=\"card\" style=\"font-size:21px;line-height:1.4\">" + _0x258627["s"]["replace"]("___", "<span class=\"gap empty\">_____</span>") + "</div>" + (_0x1bb5c5 ? "<div style=\"font-size:16px;color:var(--muted)\">Подсказка: <b style=\"letter-spacing:1px\">" + _0x1bb5c5 + "</b></div>" : "") + (_0x258627["ru"] ? _0x258627["showMeaning"] ? "<div class=\"hintbox\">Нужно сказать: " + _0x258627["ru"] + "</div>" : "<div id=\"trw\"><button type=\"button\" class=\"hint\" id=\"trb\" style=\"font-size:15px\">Показать перевод</button></div>" : "") : "<div class=\"card\" style=\"font-size:22px;line-height:1.35;text-align:center\">«" + _0x258627["ru"] + "»</div>") + "<input id=\"tyin\" class=\"tyin\" type=\"text\" autocomplete=\"off\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"Пиши здесь\" aria-label=\"Ответ по-английски\">" + "<button class=\"btn btn-p\" type=\"button\" id=\"check\" style=\"margin-top:auto\" disabled>Проверить</button>" + '<button class="link recall-skip" type="button" id="dontknow">Не знаю — показать ответ</button>' + _0x5cb4dd + "</div>", _0x1269fb();
+    var _0x47c082 = false;
+    _0x2b7f59["innerHTML"] = "<div class=\"scr\" style=\"gap:14px\">" + _0x297612() + "<div style=\"display:flex;flex-direction:column;gap:4px\"><div class=\"eyebrow\">Задание " + (_0x261281["i"] + 1) + " из " + _0x261281["steps"]["length"] + "</div><h1 class=\"disp\" style=\"font-size:28px\">" + (_0x258627["title"] ? _0x258627["title"] : _0x258627["s"] ? "Впиши фразу" : "Напиши по-английски") + "</h1></div>" + (_0x258627["s"] ? "<div class=\"card\" style=\"font-size:21px;line-height:1.4\">" + _0x258627["s"]["replace"]("___", "<span class=\"gap empty\">_____</span>") + "</div>" + (_0x258627["ru"] ? _0x258627["showMeaning"] ? "<div class=\"hintbox\">Нужно сказать: " + _0x258627["ru"] + "</div>" : "<div id=\"trw\"><button type=\"button\" class=\"hint\" id=\"trb\" style=\"font-size:15px\">Показать перевод</button></div>" : "") : "<div class=\"card\" style=\"font-size:22px;line-height:1.35;text-align:center\">«" + _0x258627["ru"] + "»</div>") + "<input id=\"tyin\" class=\"tyin\" type=\"text\" autocomplete=\"off\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"Пиши здесь\" aria-label=\"Ответ по-английски\">" + '<div class="recall-hint-area" id="recall-hint-area"><button class="hint recall-hint" type="button" id="recall-hint" aria-expanded="false" aria-controls="recall-hint-text">Подсказка: первые буквы</button><p id="recall-hint-text" class="recall-hint-text" role="status" hidden></p></div>' + "<button class=\"btn btn-p\" type=\"button\" id=\"check\" style=\"margin-top:auto\" disabled>Проверить</button>" + '<button class="link recall-skip" type="button" id="dontknow">Не знаю — показать ответ</button>' + _0x5cb4dd + "</div>", _0x1269fb();
     var _0x220ef9 = _0x2995ef("#tyin"),
       _0x592802 = _0x2995ef("#check"),
       _0x19bf46 = _0x2995ef("#trb");
@@ -1424,10 +1449,11 @@ Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](f
     _0x592802.onclick=function(){submitRecall(false);};
     var dontKnow=_0x2995ef("#dontknow");
     dontKnow.onclick=function(){submitRecall(true);};
+    var recallHint=attachRecallHint(typeSession,typeIndex,_0x258627.a[0],_0x220ef9);
     function submitRecall(unknown) {
       if(_0x47c082 || _0x261281!==typeSession || typeSession.i!==typeIndex) return;
       if(!unknown && !_0x2d530b(_0x220ef9.value)) return;
-      _0x47c082=true;
+      _0x47c082=true;recallHint.close();
       dontKnow.disabled=true;dontKnow.hidden=true;
       var _0x3d0751 = _0x2d530b(_0x220ef9["value"]),
         _0x3e45ef = !unknown && _0x258627["a"]["some"](function (_0x10d02a) {
@@ -1439,7 +1465,7 @@ Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](f
         if (!unknown && !_0x261281["noHearts"]) _0x261281["hearts"]--;
         if(!unknown) _0x2a3c96();
       }
-      if (_0x258627["wid"]) _0x515e4a(_0x258627["wid"], _0x3e45ef);
+      if (_0x258627["wid"]) _0x515e4a(_0x258627["wid"], _0x3e45ef && !recallHint.used);
       _0x3d680c(_0x3e45ef, (_0x3e45ef ? "" : "Правильно: <b>" + _0x258627["a"][0] + "</b>. ") + _0x258627["w"]);
       if(unknown) {
         var heading=_0x2b7f59.querySelector('.sheet h2');
@@ -1477,7 +1503,7 @@ Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](f
       "it": _0x464abc(_0x261281["steps"][_0x261281["i"]])
     });
     var _0x1f0c3b = _0x261281["steps"][_0x261281["i"]];
-    if (_0x1f0c3b && _0x1f0c3b["gk"]) _0x599d8b(_0x1f0c3b["gk"], _0x59c813);
+    if (_0x1f0c3b && _0x1f0c3b["gk"]) _0x599d8b(_0x1f0c3b["gk"], _0x59c813 && !(_0x261281.recallHints && _0x261281.recallHints[_0x261281.i]));
     var _0x15ced7, _0x2dd790;
     if (_0x59c813) _0x261281["run"] > 0 && _0x261281["run"] % 5 === 0 ? (_0x15ced7 = "blush", _0x2dd790 = _0x261281["run"] + " подряд! Сонечка краснеет") : (_0x15ced7 = "cheer", _0x2dd790 = _0x5ccfb0(_0x4d2709, "good"));else {
       var _0x105fac = _0x5ccfb0(_0x12b0b4, "badodd");
@@ -1945,7 +1971,7 @@ Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](f
     _0x1b3ec0();
   }function _0x4a7793(_0x13a82f,_0x2b5b78){var _0x411c85=_0x2ee1d9,_0x543d04=0x0;while(_0x543d04<_0x13a82f[_0x411c85(0x3c55)]&&_0x543d04<_0x2b5b78[_0x411c85(0x3c55)]&&_0x13a82f[_0x543d04]===_0x2b5b78[_0x543d04])_0x543d04++;return _0x306025(_0x2b5b78[_0x411c85(0x1870)](0x0,_0x543d04))+(_0x411c85(0x14e0)+_0x411c85(0x2e6c)+_0x411c85(0x3838)+_0x411c85(0x2ae5)+_0x411c85(0x3083)+_0x411c85(0x404c)+_0x411c85(0x2d76))+_0x306025(_0x2b5b78[_0x411c85(0x1870)](_0x543d04,_0x543d04+0x1)||'\x20')+_0x411c85(0x2853)+_0x306025(_0x2b5b78[_0x411c85(0x1870)](_0x543d04+0x1));}function _0x47827c(_0x5565d1) {
     var typeSession=_0x261281,typeIndex=typeSession.i,answered=false;
-    _0x2b7f59["innerHTML"] = "<div class=\"scr\" style=\"gap:14px\">" + _0x297612() + "<div style=\"display:flex;flex-direction:column;gap:4px\"><div class=\"eyebrow\">Задание " + (_0x261281["i"] + 1) + " из " + _0x261281["steps"]["length"] + "</div><h1 class=\"disp\" style=\"font-size:28px\">" + (_0x261281["u"] && _0x4818f4(_0x261281["u"]) ? "Впиши форму" : "Впиши слово") + "</h1><div style=\"font-size:16px\">" + (_0x261281["u"] && _0x4818f4(_0x261281["u"]) ? "Измени <b>" + _0x5565d1["word"] + "</b> так, чтобы подошло по смыслу. Если подходит как есть — впиши без изменений." : "Образуй слово от <b>" + _0x5565d1["word"] + "</b>, как на экзамене.") + "</div></div>" + (_0x5565d1["c"] ? "<div class=\"ctx\">" + _0x5565d1["c"] + "</div>" : "") + "<div class=\"card\">" + _0x3f5b37(_0x5565d1["s"], "<span class=\"gap empty\">_____</span>") + " <span class=\"wfw\">" + _0x5565d1["word"] + "</span></div>" + "<input id=\"tyin\" class=\"tyin\" type=\"text\" autocomplete=\"off\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"Пиши здесь\" aria-label=\"Ответ\">" + "<button class=\"btn btn-p\" type=\"button\" id=\"check\" style=\"margin-top:auto\" disabled>Проверить</button>" + '<button class="link recall-skip" type="button" id="dontknow">Не знаю — показать ответ</button>' + _0x5cb4dd + "</div>", _0x1269fb();
+    _0x2b7f59["innerHTML"] = "<div class=\"scr\" style=\"gap:14px\">" + _0x297612() + "<div style=\"display:flex;flex-direction:column;gap:4px\"><div class=\"eyebrow\">Задание " + (_0x261281["i"] + 1) + " из " + _0x261281["steps"]["length"] + "</div><h1 class=\"disp\" style=\"font-size:28px\">" + (_0x261281["u"] && _0x4818f4(_0x261281["u"]) ? "Впиши форму" : "Впиши слово") + "</h1><div style=\"font-size:16px\">" + (_0x261281["u"] && _0x4818f4(_0x261281["u"]) ? "Измени <b>" + _0x5565d1["word"] + "</b> так, чтобы подошло по смыслу. Если подходит как есть — впиши без изменений." : "Образуй слово от <b>" + _0x5565d1["word"] + "</b>, как на экзамене.") + "</div></div>" + (_0x5565d1["c"] ? "<div class=\"ctx\">" + _0x5565d1["c"] + "</div>" : "") + "<div class=\"card\">" + _0x3f5b37(_0x5565d1["s"], "<span class=\"gap empty\">_____</span>") + " <span class=\"wfw\">" + _0x5565d1["word"] + "</span></div>" + "<input id=\"tyin\" class=\"tyin\" type=\"text\" autocomplete=\"off\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"Пиши здесь\" aria-label=\"Ответ\">" + '<div class="recall-hint-area" id="recall-hint-area"><button class="hint recall-hint" type="button" id="recall-hint" aria-expanded="false" aria-controls="recall-hint-text">Подсказка: первые буквы</button><p id="recall-hint-text" class="recall-hint-text" role="status" hidden></p></div>' + "<button class=\"btn btn-p\" type=\"button\" id=\"check\" style=\"margin-top:auto\" disabled>Проверить</button>" + '<button class="link recall-skip" type="button" id="dontknow">Не знаю — показать ответ</button>' + _0x5cb4dd + "</div>", _0x1269fb();
     var _0x9d84c2 = _0x2995ef("#tyin"),
       _0x2fb2da = _0x2995ef("#check");
     _0x9d84c2["oninput"] = function () {
@@ -1960,10 +1986,11 @@ Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](f
     _0x2fb2da.onclick=function(){submitRecall(false);};
     var dontKnow=_0x2995ef("#dontknow");
     dontKnow.onclick=function(){submitRecall(true);};
+    var recallHint=attachRecallHint(typeSession,typeIndex,_0x5565d1.a[0],_0x9d84c2);
     function submitRecall(unknown) {
       if(answered || _0x261281!==typeSession || typeSession.i!==typeIndex) return;
       if(!unknown && !_0x2d530b(_0x9d84c2.value)) return;
-      answered=true;dontKnow.disabled=true;dontKnow.hidden=true;
+      answered=true;recallHint.close();dontKnow.disabled=true;dontKnow.hidden=true;
       var _0x6971e8 = _0x2d530b(_0x9d84c2["value"]),
         _0x5ea06f = !unknown && _0x5565d1["a"]["some"](function (_0x50cb9d) {
           return _0x2d530b(_0x50cb9d) === _0x6971e8;
@@ -1971,13 +1998,14 @@ Object[_0x2ee1d9(0x3ecb)](_0x5a846a[_0x2ee1d9(0x2ed6)]||{})[_0x2ee1d9(0x236b)](f
       _0x9d84c2["disabled"] = true, _0x9d84c2["classList"]["toggle"]("ok", _0x5ea06f), _0x9d84c2["classList"]["toggle"]("bad", !_0x5ea06f && !unknown), _0x261281["total"]++;
       if (_0x5ea06f) {
         _0x261281["correct"]++, _0x261281["run"]++, _0x261281["xp"] += 10, _0x439e4b();
-        if (_0x5565d1["id"] && _0x56ee62["piggy"][_0x5565d1["id"]] && (_0x261281["review"] || _0x261281["noHearts"])) _0x5d601b(_0x5565d1["id"]);
+        if (!recallHint.used && _0x5565d1["id"] && _0x56ee62["piggy"][_0x5565d1["id"]] && (_0x261281["review"] || _0x261281["noHearts"])) _0x5d601b(_0x5565d1["id"]);
       } else {
         _0x261281["run"] = 0;
         if (!unknown && !_0x261281["noHearts"]) _0x261281["hearts"]--;
         if(!unknown) _0x2a3c96();
         if (_0x5565d1["id"] && !_0x261281["jump"]) _0x22a3eb(_0x5565d1["id"]);
       }
+      if(_0x5ea06f && recallHint.used && _0x5565d1.id && !_0x261281.jump) _0x22a3eb(_0x5565d1.id);
       var _0x374084 = _0x2d530b(_0x5565d1["a"][0]),
         _0x13c388 = !_0x5ea06f && _0x6971e8["length"] > 2 && Math["abs"](_0x6971e8["length"] - _0x374084["length"]) <= 2 && _0x6971e8["slice"](0, 3) === _0x374084["slice"](0, 3);
       _0x3d680c(_0x5ea06f, (_0x5ea06f ? "" : "Правильно: <b>" + _0x5565d1["a"][0] + "</b>" + (_0x13c388 ? " · ошибка в буквах: " + _0x4a7793(_0x374084, _0x6971e8) : "") + ". ") + _0x5565d1["w"]);

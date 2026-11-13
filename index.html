@@ -771,7 +771,7 @@ function _0x2f7e(_0x3b9ef6,_0x232888){var _0x4bf3e9=_0x4bf3();return _0x2f7e=fun
   }
 
   function recallInitials(answer) {
-    var text=String(answer || '');
+    var text=String(answer || '').replace(/^the\s+/i,'');
     if ((text.match(/[A-Za-z0-9]/g)||[]).length <= 1) return 'Один символ';
     return text.replace(/[A-Za-z0-9]+(?:['’][A-Za-z0-9]+)*/g,function(word){
       return word.charAt(0)+word.slice(1).replace(/[A-Za-z0-9]/g,'·');

@@ -1,0 +1,19 @@
+{
+  "name": "murlingo-protected-release",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ci": "node ci/run.mjs",
+    "browser": "node ci/run.mjs --browser"
+  },
+  "devDependencies": {
+    "happy-dom": "20.0.11",
+    "terser": "5.44.1",
+    "playwright": "1.62.1"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24"
+  }
+}

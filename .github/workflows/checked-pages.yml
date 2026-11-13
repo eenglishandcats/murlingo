@@ -1,0 +1,97 @@
+name: Check and publish Murlingo
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      verify_blocking:
+        description: 'Verify the failure gate (must fail; never publish)'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: murlingo-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    name: All sections and regression checks
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build and verify every section
+        run: pnpm run ci
+        env:
+          MURLINGO_SOURCE_KEY: ${{ secrets.MURLINGO_SOURCE_KEY }}
+          MURLINGO_VERIFY_GATE: ${{ inputs.verify_blocking && '1' || '0' }}
+      - name: Save encrypted diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-diagnostics
+          path: artifacts/
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Upload verified site only
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist/site
+  browser:
+    name: Browser (${{ matrix.browser }})
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+      - name: Verify all exercises and mobile interactions
+        run: pnpm run browser
+        env:
+          MURLINGO_SOURCE_KEY: ${{ secrets.MURLINGO_SOURCE_KEY }}
+          MURLINGO_BROWSER: ${{ matrix.browser }}
+      - name: Save encrypted browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-diagnostics-${{ matrix.browser }}
+          path: artifacts/
+          retention-days: 7
+          if-no-files-found: warn
+  deploy:
+    name: Publish verified game
+    needs: [validate, browser]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && !inputs.verify_blocking
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4
